@@ -1,4 +1,7 @@
+#![feature(test)]
+
 extern crate cards;
+extern crate test;
 
 enum Player{
 	Left,
@@ -22,7 +25,7 @@ fn play()->WarGame{
 
 	// Game loop
 	loop {
-		turns = turns + 1;
+		turns += 1;
 		// Check if someone won (no more cards)
 		if left.len() == 52 {
 			return WarGame{winner: Player::Left, turns: turns};
@@ -44,7 +47,7 @@ fn play()->WarGame{
 			right.insert(0, left_card);
 		}
 		else {
-			let mut pool = Vec::new();
+			let mut pool = Vec::with_capacity(6);
 			pool.push(left_card);
 			pool.push(right_card);
 			loop{
@@ -68,7 +71,7 @@ fn play()->WarGame{
 				if right.len() < 4{
 					left.append(&mut right); //Give away all cards
 					left.append(&mut pool);
-					left.insert(0, l);
+					left.insert(0, l); //left has already played
 					break;
 				}
 				else{
@@ -92,6 +95,7 @@ fn play()->WarGame{
 					break;
 				}
 				else{
+					//There is another tie, push cards to pool and loop again
 					pool.push(l);
 					pool.push(r);
 				}
@@ -109,7 +113,7 @@ fn main() {
 	let mut right_wins = 0;
 	let mut total_turns = 0;
 
-	for game in games.iter(){
+	for game in &games{
 		total_turns += game.turns;
 		match game.winner{
 			Player::Left => left_wins += 1,
@@ -123,4 +127,15 @@ fn main() {
 				right_wins,
 				right_wins as f32 / games.len() as f32 * 100f32,);
 	println!("Average # of Turns: {:?}", total_turns as f32 / games.len() as f32);
+}
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	use test::Bencher;
+
+	#[bench]
+	fn bench_play_game(b: &mut Bencher) {
+		b.iter(|| play());
+	}
 }
