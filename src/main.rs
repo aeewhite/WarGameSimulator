@@ -2,6 +2,8 @@
 
 extern crate cards;
 extern crate test;
+extern crate rayon;
+use rayon::prelude::*;
 
 enum Player{
 	Left,
@@ -105,10 +107,8 @@ fn play()->WarGame{
 }
 
 fn main() {
-	let mut games = Vec::new();
-	for _ in 0..500_000{
-		games.push(play());
-	}
+	let games: Vec<WarGame> = (0..1_000_000).into_par_iter().map(|_| play()).collect();
+	
 	let mut left_wins = 0;
 	let mut right_wins = 0;
 	let mut total_turns = 0;

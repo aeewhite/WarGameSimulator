@@ -6,3 +6,5 @@ authors = ["Andrew White <aeewhite@gmail.com>"]
 [dependencies.cards]
 git = "https://github.com/aeewhite/cards-rs.git"
 
+[dependencies]
+rayon = "0.9.0"
